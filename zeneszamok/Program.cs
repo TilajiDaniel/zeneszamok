@@ -32,6 +32,8 @@ namespace zeneszamok
                     }
                     break;
                 case "2":
+                        Eloado rogzitendo = EloadoBekerese();
+                        string uzenet = EloadoFelvetele(rogzitendo);
                         break;
                 case "3":
                     break;
@@ -47,32 +49,62 @@ namespace zeneszamok
             } while (kilep);
 
 
-            static List<Eloado> EladoLista()
-            {
-                List<Eloado> eloadoLista = new List<Eloado>();
-                SQLConnection.Open();
-                string sql = "SELECT * FROM eloado";
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.CommandText = sql;
-                cmd.Connection = SQLConnection;
-                MySqlDataReader reader = cmd.ExecuteReader();
+            
+        }
 
-                while (reader.Read())
+        private static string EloadoFelvetele(Eloado rogzitendo)
+        {
+            SQLConnection.Open();
+            string sql = "INSERT INTO eloado(Nev, Nemzetiseg, Szolo) VALUES (@nev,@nemzetiseg,@szolo)";
+            MySqlCommand cmd = new MySqlCommand(sql, SQLConnection);
+            cmd.Parameters.AddWithValue("@nev", rogzitendo.Nev);
+            cmd.Parameters.AddWithValue("@nemzetiseg", rogzitendo.Nemzetiseg);
+            cmd.Parameters.AddWithValue("@szolo", rogzitendo.Szolo);
+            int erintettSorok = cmd.ExecuteNonQuery();
+            SQLConnection.Close();
+            return erintettSorok > 0 ? "Sikeres felvétel" : "Sikertelen felvétel";
+        }
+
+        static Eloado EloadoBekerese()
+        {
+            Eloado Ujeloado = new Eloado();
+            Console.WriteLine("Kérem az előadó azonosytot:");
+            Ujeloado.Id = int.Parse(Console.ReadLine());
+            Console.WriteLine("Kérem az előadó nevét:");
+            Ujeloado.Nev = Console.ReadLine();
+            Console.WriteLine("Kérem az előadó nemzetiségét:");
+            Ujeloado.Nemzetiseg = Console.ReadLine();
+            Console.WriteLine("Kérem az előadó szóló előadó e? (igen/nem)");
+            Ujeloado.Szolo = "igen" == Console.ReadLine().ToLower();
+            return Ujeloado;
+
+
+        }
+        static List<Eloado> EladoLista()
+        {
+            List<Eloado> eloadoLista = new List<Eloado>();
+            SQLConnection.Open();
+            string sql = "SELECT * FROM eloado";
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.CommandText = sql;
+            cmd.Connection = SQLConnection;
+            MySqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Eloado eloado = new Eloado();
+                eloado.Id = reader.GetInt32("Id");
+                eloado.Nev = reader.GetString("Nev");
+                if (!reader.IsDBNull(2))
                 {
-                    Eloado eloado = new Eloado();
-                    eloado.Id = reader.GetInt32("Id");
-                    eloado.Nev = reader.GetString("Nev");
-                    if (!reader.IsDBNull(2))
-                    {
-                        eloado.Nemzetiseg = reader.GetString
-                            ("Nemzetiseg");
-                    }
-                    eloado.Szolo = reader.GetBoolean("Szolo");
-                    eloadoLista.Add(eloado);
+                    eloado.Nemzetiseg = reader.GetString
+                        ("Nemzetiseg");
                 }
-                SQLConnection.Close();
-                return eloadoLista;
+                eloado.Szolo = reader.GetBoolean("Szolo");
+                eloadoLista.Add(eloado);
             }
+            SQLConnection.Close();
+            return eloadoLista;
         }
 
         private static void BuildConnection()
@@ -87,4 +119,5 @@ namespace zeneszamok
             SQLConnection.ConnectionString = connectionString;
         }
     }
+
 }
