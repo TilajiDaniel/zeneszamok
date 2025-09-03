@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using zeneszamok.Models;
 
 namespace zeneszamok
 {
@@ -15,10 +16,18 @@ namespace zeneszamok
             cmd.CommandText = sql;
             cmd.Connection = SQLConnection;
             MySqlDataReader reader = cmd.ExecuteReader();
+            List<Eloado> eloadoLista = new List<Eloado>();
             while (reader.Read())
             {
-                //A beolvasott adatok feldolgozása
-
+                Eloado eloado = new Eloado();
+                eloado.Id = reader.GetInt32("Id");
+                eloado.Nev = reader.GetString("Nev");
+                if (!reader.IsDBNull(reader.GetOrdinal("Nemzetiseg")))
+                {
+                    eloado.Nemzetiseg = reader.GetString("Nemzetiseg");
+                }
+                eloado.Szolo = reader.GetBoolean("Szolo");
+                eloadoLista.Add(eloado);
             }
             SQLConnection.Close();
 
