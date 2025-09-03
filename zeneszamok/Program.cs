@@ -8,26 +8,32 @@ namespace zeneszamok
         static MySqlConnection SQLConnection;
         static void Main(string[] args)
         {
-            string connectionString = "SERVER = localhost;" +
-                          "DATABASE= zene;" +
-                          "UID = root;" +
-                          "PASSWORD =;" +
-                          "SSL MODE= none;";
-            MySqlConnection conn = new MySqlConnection();
-            conn.ConnectionString = connectionString;
-            conn.Open();
-            string sql = "SELECT * FROM előadó";
+            BuildConnection();
+            SQLConnection.Open();
+            string sql = "SELECT * FROM eloado";
             MySqlCommand cmd = new MySqlCommand();
             cmd.CommandText = sql;
-            cmd.Connection = conn;
+            cmd.Connection = SQLConnection;
             MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 //A beolvasott adatok feldolgozása
 
             }
-            conn.Close();
+            SQLConnection.Close();
 
+        }
+
+        private static void BuildConnection()
+        {
+
+            string connectionString = "SERVER = localhost;" +
+                                      "DATABASE= zene;" +
+                                      "UID = root;" +
+                                      "PASSWORD =;" +
+                                      "SSL MODE= none;";
+            SQLConnection = new MySqlConnection();
+            SQLConnection.ConnectionString = connectionString;
         }
     }
 }
