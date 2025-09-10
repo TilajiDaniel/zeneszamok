@@ -33,10 +33,14 @@ namespace zeneszamok
                     break;
                 case "2":
                         Eloado rogzitendo = EloadoBekerese();
-                        string uzenet = EloadoFelvetele(rogzitendo);
+                        string uzenetUJ = EloadoFelvetele(rogzitendo);
+                        Console.WriteLine(uzenetUJ);    
                         break;
                 case "3":
-                    break;
+                        Eloado modositando = EloadoBekerese();
+                        string uzenetMOdosit = EloadoModositasa(modositando);
+                        Console.WriteLine(uzenetMOdosit);
+                        break;
                 case "4":
                      break;
                 case "5":
@@ -51,7 +55,19 @@ namespace zeneszamok
 
             
         }
-
+        private static string EloadoModositasa(Eloado modositando)
+        {
+            SQLConnection.Open();
+            string sql = "UPDATE eloado SET Nev = @nev, Nemzetiseg = @nemzetiseg, Szolo = @szolo WHERE Id = @id";
+            MySqlCommand cmd = new MySqlCommand(sql, SQLConnection);
+            cmd.Parameters.AddWithValue("@nev", modositando.Nev);
+            cmd.Parameters.AddWithValue("@nemzetiseg", modositando.Nemzetiseg);
+            cmd.Parameters.AddWithValue("@szolo", modositando.Szolo);
+            cmd.Parameters.AddWithValue("@id", modositando.Id);
+            int erintettSorok = cmd.ExecuteNonQuery();
+            SQLConnection.Close();
+            return erintettSorok > 0 ? "Sikeres modositas" : "Sikertelen modositas";
+        }
         private static string EloadoFelvetele(Eloado rogzitendo)
         {
             SQLConnection.Open();
