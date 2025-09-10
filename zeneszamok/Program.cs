@@ -42,7 +42,11 @@ namespace zeneszamok
                         Console.WriteLine(uzenetMOdosit);
                         break;
                 case "4":
-                     break;
+                        Console.WriteLine("Kérem a törlendő előadó azonosítóját:");
+                        int torlendoId = int.Parse(Console.ReadLine());
+                        string uzenetTorol = EloadoTorlese(torlendoId);
+                        Console.WriteLine(uzenetTorol);
+                        break;
                 case "5":
                      kilep = false;
                      break;
@@ -54,6 +58,16 @@ namespace zeneszamok
 
 
             
+        }
+        private static string EloadoTorlese(int id )
+        {
+            SQLConnection.Open();
+            string sql = "DELETE FROM eloado WHERE Id = @id";
+            MySqlCommand cmd = new MySqlCommand(sql, SQLConnection);
+            cmd.Parameters.AddWithValue("@id", id);
+            int erintettSorok = cmd.ExecuteNonQuery();
+            SQLConnection.Close();
+            return erintettSorok > 0 ? "Sikeres torles" : "Sikertelen torles";
         }
         private static string EloadoModositasa(Eloado modositando)
         {
